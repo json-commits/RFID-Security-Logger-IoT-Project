@@ -1,4 +1,4 @@
-
+{{> navbar}}
 
 <!--User Management-->
 <div class="shadow-md max-w-[1280px] mt-[32px] container mx-auto shadow- space-y-[5px] 2xl:space-y-[10px]">
@@ -36,18 +36,46 @@
         </div>
     </div>
     <hr class="shadow- bg-primary-500 h-[2px]"/>
-    <div class="shadow- font-mono grid-cols-4 grid align-baseline mx-[2%] xl:mx-[5%]">
+    <div class="shadow- font-mono grid-cols-4 grid align-baseline mx-[2%] xl:mx-[5%] py-5">
         <div class="shadow- flex items-center justify-center">
-            <input class="w-[90%] rounded-global xl:flex" placeholder="Enter your text" type="text"/>
+            <input id="add_user" class="w-[90%] rounded-global xl:flex text-center" placeholder="User" type="text"/>
         </div>
         <div class="flex items-center justify-center">
-            <input class="w-[90%] rounded-global xl:flex" placeholder="Enter your text" type="text"/>
+            <input id="add_UID" class="w-[90%] rounded-global xl:flex text-center" placeholder="UID" type="text"/>
         </div>
         <div class="flex items-center justify-center shadow-">
-            <input class="w-[90%] rounded-global xl:flex" placeholder="Enter your text" type="text"/>
+            <input id="add_rooms" class="w-[90%] rounded-global xl:flex text-center" placeholder="Permitted Rooms" type="text"/>
         </div>
+
+        <script>
+            function add_user() {
+                var user = document.getElementById('add_user').value.trim();
+                var uid = document.getElementById('add_UID').value.trim();
+                var permissions = document.getElementById('add_rooms').value.trim();
+
+                if (user === "" || uid === "" || permissions === "") {
+                    alert("Please fill all fields!");
+                    return false;
+                }
+
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        alert(this.responseText);
+                    }
+                };
+                xhttp.open("POST", "/add_user", true);
+                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xhttp.send("user=" + user + "&uid=" + uid + "&permissions=" + permissions);
+
+                alert("User added!");
+            }
+        </script>
+
         <div class="shadow- flex items-center justify-center">
-            <button id="pnnsmb" class="bg-primary text-white px-4 rounded-global py-[2px] lg:py-[0px]">Delete</button>
+            <button id="pnnsmb" class="bg-primary text-white px-4 rounded-global py-[2px] lg:py-[0px]"
+                    onclick="add_user()">Add
+            </button>
         </div>
     </div>
 </div>
