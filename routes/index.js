@@ -8,9 +8,11 @@ var RecentActivity = require('../models/RecentActivitiesSchema');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  //TODO Setup checking of a login session if no token found redirect to login
-
-  //checkLoginToken();
+    var session = req.session;
+    if(session.user === undefined){
+        res.redirect('/login');
+        return;
+    }
 
   db.findMany(RecentActivity, {}, {}, function(result) {
     var recentActivityMap = result.map(result => result.toJSON());
@@ -31,6 +33,12 @@ router.get('/login', function (req, res, next) {
 });
 
 router.get('/logs', function (req, res, next) {
+    var session = req.session;
+    if(session.user === undefined){
+        res.redirect('/login');
+        return;
+    }
+
     Log.find({}, null, {sort: {unixTime: -1}}, function (error, result) {
         var logMap = result.map(result => result.toJSON())
 
@@ -41,26 +49,22 @@ router.get('/logs', function (req, res, next) {
         res.render('logs', {title: 'Logs', logList: logMap})
 
     });
-
-  // db.findMany(Log, {}, null, function (result){
-  //   var logMap = result.map(result => result.toJSON())
-  //
-  //   for (let logMapElement of logMap) {
-  //     logMapElement.time = new Date(logMapElement.unixTime * 1000).toLocaleString();
-  //   }
-  //   res.render('logs', {title: 'Logs', logList: logMap})
-  // })
 });
 
 router.get('/user_management', function (req, res, next) {
+    var session = req.session;
+    if(session.user === undefined){
+        res.redirect('/login');
+        return;
+    }
+
   db.findMany(User, {}, null, function (result) {
     res.render('user_management', {title: 'User Management', userList: result.map(result => result.toJSON())})
   });
 });
 
 router.get('/logout', function (req, res, next) {
-  //TODO Invalidate login token
-
+    req.session.destroy();
   res.redirect('/login')
 });
 
@@ -108,11 +112,13 @@ router.post('/add_log', function (req, res, next) {
 });
 
 router.post('/login', function (req, res, next) {
-  //TODO Check login credentials and set token
+    console.log(req.body);
   if (req.body.username === 'admin' && req.body.password === 'admin') {
-
+    req.session.user = req.body.username;
     res.redirect('/');
   }
+
+    res.render('login', {title: 'Login', error: 'Invalid username or password'})
 });
 
 router.post('/add_user', function (req, res, next) {
