@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 const UsersSchema = new mongoose.Schema({
     user: String,
-    UID: String,
+    uid: String,
     permissions: String
 });
 

@@ -4,24 +4,13 @@
 <div class="shadow-md max-w-[1280px] mt-[32px] container mx-auto shadow- space-y-[5px] 2xl:space-y-[10px]">
     <div class="shadow- font-bold grid-cols-5 grid align-baseline mx-[2%] xl:mx-[5%]">
         <div class="flex items-center justify-center"><span class="md:">User</span></div>
-        <div class="flex items-center justify-center"><span class="md:">Attendance</span></div>
-        <div class="flex items-center justify-center shadow-"><span class="md:">Time Accssed</span></div>
+        <div class="flex items-center justify-center"><span class="md:">In Attendance</span></div>
+        <div class="flex items-center justify-center shadow-"><span class="md:">Last Logged Time</span></div>
         <div class="flex items-center justify-center"><span class="md:">Last Location</span></div>
         <div class="flex items-center justify-center"><span class="md:">Status</span></div>
     </div>
     <hr class="shadow- bg-primary-500 h-[2px]"/>
-    <div class="shadow- font-mono grid-cols-5 grid align-baseline mx-[2%] xl:mx-[5%]">
-        <div class="shadow- flex items-center justify-center"><span class="md: lg:shadow-">Test-User</span></div>
-        <div class="flex items-center justify-center"><span class="md:">Today</span></div>
-        <div class="flex items-center justify-center shadow-"><span class="md:">C1</span></div>
-        <div class="shadow- flex items-center justify-center"><span class="md: lg:shadow-">Test-User</span></div>
-        <div class="shadow- flex items-center justify-center"><span class="md: lg:shadow-">Test-User</span></div>
-    </div>
-    <div class="shadow- font-mono grid-cols-5 grid align-baseline mx-[2%] xl:mx-[5%]">
-        <div class="shadow- flex items-center justify-center"><span class="md: lg:shadow-">Test-User</span></div>
-        <div class="flex items-center justify-center"><span class="md:">Today</span></div>
-        <div class="flex items-center justify-center shadow-"><span class="md:">C1</span></div>
-        <div class="shadow- flex items-center justify-center"><span class="md: lg:shadow-">Test-User</span></div>
-        <div class="shadow- flex items-center justify-center"><span class="md: lg:shadow-">Test-User</span></div>
-    </div>
+    {{#each recentActivities}}
+        {{> recent_activity_card}}
+    {{/each}}
 </div>

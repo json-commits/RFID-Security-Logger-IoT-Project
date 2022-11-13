@@ -5,7 +5,7 @@ var debug = require('debug')('iot-project:server');
 const database = {
 
     connect: async function () {
-        mongoose.connect(process.env.MONGOOSE_CONNECTION_STRING);
+        await mongoose.connect(process.env.MONGOOSE_CONNECTION_STRING);
         debug('Connected to database');
     },
 
@@ -68,6 +68,14 @@ const database = {
             if(error) return callback(false);
             console.log('Document deleted: ' + result.deletedCount);
             return callback(true);
+        });
+    },
+
+    distinct: function(model, field, callback) {
+        model.distinct(field, function(error, result) {
+            if(error) return callback(false);
+            console.log('Found ' + result.length + ' distinct values for ' + field);
+            return callback(result);
         });
     }
 

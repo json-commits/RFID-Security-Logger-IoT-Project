@@ -2,6 +2,7 @@
 
 <!--User Management-->
 <div class="shadow-md max-w-[1280px] mt-[32px] container mx-auto shadow- space-y-[5px] 2xl:space-y-[10px]">
+    <!--heading-->
     <div class="shadow- font-bold grid-cols-4 grid align-baseline mx-[2%] xl:mx-[5%]">
         <div class="flex items-center justify-center"><span class="md:">User</span></div>
         <div class="flex items-center justify-center"><span class="md:">UID</span></div>
@@ -9,32 +10,11 @@
         <div class="flex items-center justify-center"><span class="md:">Enter text</span></div>
     </div>
     <hr class="shadow- bg-primary-500 h-[2px]"/>
-    <div class="shadow- font-mono grid-cols-4 grid align-baseline mx-[2%] xl:mx-[5%]">
-        <div class="shadow- flex items-center justify-center"><span class="md: lg:shadow-">Test-User</span></div>
-        <div class="flex items-center justify-center"><span class="md:">Today</span></div>
-        <div class="flex items-center justify-center shadow-"><span class="md:">C1</span></div>
-        <div class="shadow- space-x-[22px] flex items-center justify-center">
-            <div class="space-x-[4px] relative items-center justify-between shadow- flex flex-col gap-y-[4px] sm:flex-row md:">
-                <button id="dgvhzb" class="bg-primary text-white px-4 rounded-global py-[2px] lg:py-[0px]">Delete
-                </button>
-                <button id="qdsCkc" class="bg-primary text-white px-4 rounded-global py-[2px] lg:py-[0px]">Change
-                </button>
-            </div>
-        </div>
-    </div>
-    <div class="shadow- font-mono grid-cols-4 grid align-baseline mx-[2%] xl:mx-[5%]">
-        <div class="shadow- flex items-center justify-center"><span class="md: lg:shadow-">Test-User</span></div>
-        <div class="flex items-center justify-center"><span class="md:">Today</span></div>
-        <div class="flex items-center justify-center shadow-"><span class="md:">C1</span></div>
-        <div class="shadow- space-x-[22px] flex items-center justify-center">
-            <div class="space-x-[4px] relative items-center justify-between shadow- flex flex-col gap-y-[4px] sm:flex-row md:">
-                <button id="dgvhzb" class="bg-primary text-white px-4 rounded-global py-[2px] lg:py-[0px]">Delete
-                </button>
-                <button id="qdsCkc" class="bg-primary text-white px-4 rounded-global py-[2px] lg:py-[0px]">Change
-                </button>
-            </div>
-        </div>
-    </div>
+
+    {{#each userList}}
+        {{> user_card}}
+    {{/each}}
+
     <hr class="shadow- bg-primary-500 h-[2px]"/>
     <div class="shadow- font-mono grid-cols-4 grid align-baseline mx-[2%] xl:mx-[5%] py-5">
         <div class="shadow- flex items-center justify-center">
@@ -68,8 +48,85 @@
                 xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 xhttp.send("user=" + user + "&uid=" + uid + "&permissions=" + permissions);
 
-                alert("User added!");
+                // alert("User added!");
+                location.reload();
             }
+
+            window.onload = (event) => {
+                var deleteButtonList = document.getElementsByClassName("delete_button");
+                for (let deleteButtonElement of deleteButtonList) {
+                    deleteButtonElement.addEventListener('click', function (e){
+                        var parentDiv = e.path[3];
+                        var user_value = parentDiv.getElementsByClassName("user_info")[0].textContent
+                        var uid_value = parentDiv.getElementsByClassName("uid_info")[0].textContent
+                        var perm_value = parentDiv.getElementsByClassName("perm_info")[0].textContent
+
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function () {
+                            if (this.readyState === 4 && this.status === 200) {
+                                alert(this.responseText);
+                            }
+                        };
+                        xhttp.open("POST", "/delete_user", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send("user=" + user_value + "&uid=" + uid_value + "&permissions=" + perm_value);
+
+                        // alert("User deleted!");
+                        location.reload();
+                    });
+                }
+
+                var editButtonList = document.getElementsByClassName("edit_button");
+                for (let editButtonElement of editButtonList) {
+                    editButtonElement.onclick = function (e){
+                        var editButton = e.path[0];
+                        var parentDiv = e.path[3];
+                        var user_element = parentDiv.getElementsByClassName("user_info")[0]
+                        var uid_element = parentDiv.getElementsByClassName("uid_info")[0]
+                        var perm_element = parentDiv.getElementsByClassName("perm_info")[0]
+                        var elements_list = [user_element, uid_element, perm_element]
+
+                        for (let element of elements_list) {
+                            var replacement_element = document.createElement("input");
+                            replacement_element.setAttribute("class", element.getAttribute("class"));
+                            replacement_element.classList.add("text-center");
+                            replacement_element.setAttribute("placeholder", element.textContent);
+                            replacement_element.setAttribute("value", element.textContent);
+                            replacement_element.setAttribute("type", "text");
+
+                            element.replaceWith(replacement_element);
+                        }
+
+                        editButton.textContent = "Save";
+                        editButton.onclick = function (e){
+                            var parentDiv = e.path[3];
+                            var user_value = parentDiv.getElementsByClassName("user_info")[0].value
+                            var uid_value = parentDiv.getElementsByClassName("uid_info")[0].value
+                            var perm_value = parentDiv.getElementsByClassName("perm_info")[0].value
+
+                            var original_user = parentDiv.getElementsByClassName("user_info")[0].getAttribute("placeholder")
+                            var original_uid = parentDiv.getElementsByClassName("uid_info")[0].getAttribute("placeholder");
+                            var original_perm = parentDiv.getElementsByClassName("perm_info")[0].getAttribute("placeholder");
+
+                            var xhttp = new XMLHttpRequest();
+                            xhttp.onreadystatechange = function () {
+                                if (this.readyState === 4 && this.status === 200) {
+                                    alert(this.responseText);
+                                }
+                            };
+                            xhttp.open("POST", "/edit_user", true);
+                            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                            xhttp.send("user=" + user_value + "&uid=" + uid_value + "&permissions=" + perm_value
+                                + "&original_user=" + original_user + "&original_uid=" + original_uid +
+                                    "&original_permissions=" + original_perm);
+
+                            // alert("User edited!");
+                            location.reload();
+                        }
+
+                    }
+                }
+            };
         </script>
 
         <div class="shadow- flex items-center justify-center">
