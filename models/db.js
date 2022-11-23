@@ -12,7 +12,7 @@ const database = {
     insertOne: function(model, doc, callback) {
         model.create(doc, function(error, result) {
             if(error) return callback(false);
-            console.log('Added ' + result);
+            // console.log('Added ' + result);
             return callback(true);
         });
     },
@@ -20,7 +20,7 @@ const database = {
     insertMany: function(model, docs, callback) {
         model.insertMany(docs, function(error, result) {
             if(error) return callback(false);
-            console.log('Added ' + result);
+            // console.log('Added ' + result);
             return callback(true);
         });
     },
