@@ -91,7 +91,7 @@ router.post('/add_log', function (req, res, next) {
                 }
             });
 
-            db.findOne(RecentActivity, {'user': req.body.user}, null, function (result) {
+            db.findOne(RecentActivity, {'user': log.user}, null, function (result) {
                 var recent_activity = {
                     "user": log.user,
                     "inAttendance": true,
