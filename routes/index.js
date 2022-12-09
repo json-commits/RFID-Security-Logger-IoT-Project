@@ -75,49 +75,54 @@ router.get('/test', function (req, res, next) {
 router.post('/add_log', function (req, res, next) {
     var log;
     db.findOne(User, {'uid': req.body.user}, null, function (result) {
-        if (result) {
-            log = {
-                room: req.body.room,
-                user: result.user,
-                unixTime: Date.now(),
-                action: req.body.action
+        if (result === null) {
+            res.status(403).send('User not found');
+            return;
+        }
+        if (!result.permissions.split(' ').includes(req.body.room)) {
+            res.status(403).send('You do not have permission to access this room!');
+            return;
+        }
+
+        log = {
+            room: req.body.room,
+            user: result.user,
+            unixTime: Date.now(),
+            action: req.body.action
+        };
+
+        db.insertOne(Log, log, function (result) {
+            if (result) {
+                res.status(200).send('Log added');
+            } else {
+                res.status(500).send('Error adding log');
+            }
+        });
+
+        db.findOne(RecentActivity, {'user': log.user}, null, function (result) {
+            var recent_activity = {
+                "user": log.user,
+                "inAttendance": true,
+                "lastLoggedUnixTime": Date.now(),
+                "lastLocation": log.room,
+                "lastAction": log.action
             };
 
-            db.insertOne(Log, log, function (result) {
-                if (result) {
-                    res.status(200).send('Log added');
-                } else {
-                    res.status(500).send('Error adding log');
+            if (result) {
+                console.log('Updating recent activity');
+                if (log.action === 'Attendance') {
+                    recent_activity.inAttendance = !result.inAttendance;
                 }
-            });
 
-            db.findOne(RecentActivity, {'user': log.user}, null, function (result) {
-                var recent_activity = {
-                    "user": log.user,
-                    "inAttendance": true,
-                    "lastLoggedUnixTime": Date.now(),
-                    "lastLocation": log.room,
-                    "lastAction": log.action
-                };
+                db.updateOne(RecentActivity, {'user': log.user}, recent_activity, function () {
+                });
+            } else {
+                console.log('Inserting recent activity');
+                db.insertOne(RecentActivity, recent_activity, function () {
+                });
+            }
+        });
 
-                if (result) {
-                    console.log('Updating recent activity');
-                    if (log.action === 'Attendance') {
-                        recent_activity.inAttendance = !result.inAttendance;
-                    }
-
-                    db.updateOne(RecentActivity, {'user': log.user}, recent_activity, function () {
-                    });
-                } else {
-                    console.log('Inserting recent activity');
-                    db.insertOne(RecentActivity, recent_activity, function () {
-                    });
-                }
-            });
-
-        } else {
-            res.status(400).send('User not found');
-        }
     });
 });
 
