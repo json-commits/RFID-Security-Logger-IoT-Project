@@ -78,6 +78,8 @@ router.post('/add_log', function (req, res, next) {
     console.log(req.body);
 
     db.findOne(User, {'uid': req.body.user}, null, function (result) {
+        console.log(result);
+
         if (result === null) {
             res.status(403).send('User not found');
             return;
@@ -85,9 +87,11 @@ router.post('/add_log', function (req, res, next) {
 
         var permissions_list = result.permissions.split(' ');
 
-        if ((!permissions_list.includes(req.body.room) && req.body.room !== '0') || !permissions_list.includes('admin')) {
-            res.status(403).send('You do not have permission to access this room!');
-            return;
+        if (!permissions_list.includes('admin')) {
+            if ((!permissions_list.includes(req.body.room) && req.body.room !== '0')) {
+                res.status(403).send('You do not have permission to access this room!');
+                return;
+            }
         }
 
         log = {
