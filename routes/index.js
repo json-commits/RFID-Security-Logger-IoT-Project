@@ -75,6 +75,8 @@ router.get('/test', function (req, res, next) {
 router.post('/add_log', function (req, res, next) {
     var log;
 
+    var req_room = (req.body.room).toString();
+
     console.log(req.body);
 
     db.findOne(User, {'uid': req.body.user}, null, function (result) {
@@ -88,14 +90,16 @@ router.post('/add_log', function (req, res, next) {
         var permissions_list = result.permissions.split(' ');
 
         if (!permissions_list.includes('admin')) {
-            if ((!permissions_list.includes(req.body.room) && req.body.room !== '0')) {
+            console.log('User isn\'t an admin');
+
+            if ((!permissions_list.includes(req_room) && req_room !== '0')) {
                 res.status(403).send('You do not have permission to access this room!');
                 return;
             }
         }
 
         log = {
-            room: req.body.room,
+            room: req_room,
             user: result.user,
             unixTime: Date.now(),
             action: req.body.action
